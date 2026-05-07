@@ -1,17 +1,25 @@
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import L, {
-    type LatLngExpression,
-    type Layer,
-    type PathOptions,
+  type LatLngExpression,
+  type Layer,
+  type PathOptions,
 } from "leaflet";
 import { useEffect, useState } from "react";
-import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
+import {
+  Circle,
+  CircleMarker,
+  GeoJSON,
+  MapContainer,
+  Popup,
+  TileLayer,
+  useMap,
+} from "react-leaflet";
 import { Text, View } from "react-native";
 
 import styles from "../app/styles/styles";
+import { type UserLocation } from "../hooks/useUserLocation";
 
 const BOGOTA_CENTER: LatLngExpression = [4.711, -74.0721];
-
 const GEOJSON_URL = "/data/MANZ.geojson";
 
 const estiloBaseManzana: PathOptions = {
@@ -26,6 +34,12 @@ const estiloHoverManzana: PathOptions = {
   weight: 1.6,
   fillColor: "#F97316",
   fillOpacity: 0.35,
+};
+
+type BogotaMapLeafletProps = {
+  location: UserLocation | null;
+  followUser: boolean;
+  centerRequestId: number;
 };
 
 function AjustarVistaGeoJson({
@@ -47,6 +61,29 @@ function AjustarVistaGeoJson({
       });
     }
   }, [data, map]);
+
+  return null;
+}
+
+function CentrarEnUbicacion({
+  location,
+  followUser,
+  centerRequestId,
+}: {
+  location: UserLocation | null;
+  followUser: boolean;
+  centerRequestId: number;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!location || !followUser) return;
+
+    map.flyTo([location.latitude, location.longitude], 17, {
+      animate: true,
+      duration: 1,
+    });
+  }, [location, followUser, centerRequestId, map]);
 
   return null;
 }
@@ -84,7 +121,11 @@ function configurarInteraccion(
   });
 }
 
-export default function BogotaMapLeaflet() {
+export default function BogotaMapLeaflet({
+  location,
+  followUser,
+  centerRequestId,
+}: BogotaMapLeafletProps) {
   const [geojson, setGeojson] = useState<FeatureCollection<Geometry> | null>(
     null
   );
@@ -101,7 +142,7 @@ export default function BogotaMapLeaflet() {
         const respuesta = await fetch(GEOJSON_URL);
 
         if (!respuesta.ok) {
-          throw new Error("No se pudo cargar public/data/MANZ.geojson");
+          throw new Error("No se pudo cargar /data/MANZ.geojson");
         }
 
         const data = (await respuesta.json()) as FeatureCollection<Geometry>;
@@ -142,7 +183,7 @@ export default function BogotaMapLeaflet() {
         }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
@@ -155,6 +196,51 @@ export default function BogotaMapLeaflet() {
             />
 
             <AjustarVistaGeoJson data={geojson} />
+          </>
+        )}
+
+        {location && (
+          <>
+            <Circle
+              center={[location.latitude, location.longitude]}
+              radius={location.accuracy ?? 30}
+              pathOptions={{
+                color: "#2563EB",
+                fillColor: "#3B82F6",
+                fillOpacity: 0.12,
+                weight: 2,
+              }}
+            />
+
+            <CircleMarker
+              center={[location.latitude, location.longitude]}
+              radius={10}
+              pathOptions={{
+                color: "#FFFFFF",
+                fillColor: "#2563EB",
+                fillOpacity: 1,
+                weight: 3,
+              }}
+            >
+              <Popup>
+                <strong>Tu ubicación actual</strong>
+                <br />
+                Latitud: {location.latitude.toFixed(6)}
+                <br />
+                Longitud: {location.longitude.toFixed(6)}
+                <br />
+                Precisión:{" "}
+                {location.accuracy
+                  ? `${Math.round(location.accuracy)} metros`
+                  : "No disponible"}
+              </Popup>
+            </CircleMarker>
+
+            <CentrarEnUbicacion
+  location={location}
+  followUser={followUser}
+  centerRequestId={centerRequestId}
+/>
           </>
         )}
       </MapContainer>
@@ -170,7 +256,7 @@ export default function BogotaMapLeaflet() {
       {estadoCarga === "error" && (
         <View style={styles.mapLoading}>
           <Text style={styles.mapLoadingText}>
-            No se pudo cargar public/data/MANZ.geojson
+            No se pudo cargar /data/MANZ.geojson
           </Text>
         </View>
       )}

@@ -328,6 +328,124 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#64748B",
   },
+    locationControl: {
+    position: "absolute",
+    right: 20,
+    top: 20,
+    width: 300,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    shadowColor: "#0F172A",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 10,
+    zIndex: 1000,
+  },
+
+  locationTitle: {
+    fontSize: 17,
+    fontWeight: "900",
+    color: "#0F172A",
+    marginBottom: 4,
+  },
+
+  locationStatus: {
+    fontSize: 14,
+    fontWeight: "800",
+    color: "#2563EB",
+    marginBottom: 12,
+  },
+
+  locationDataBox: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    marginBottom: 12,
+    gap: 4,
+  },
+
+  locationData: {
+    fontSize: 13,
+    color: "#334155",
+    fontWeight: "700",
+  },
+
+  locationError: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#DC2626",
+    fontWeight: "800",
+    backgroundColor: "#FEF2F2",
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 12,
+  },
+
+  locationButtonRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+
+  locationPrimaryButton: {
+    flex: 1,
+    backgroundColor: "#2563EB",
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    alignItems: "center",
+  },
+
+  locationPrimaryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "900",
+  },
+
+  locationSecondaryButton: {
+    backgroundColor: "#E0F2FE",
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    alignItems: "center",
+  },
+
+  locationSecondaryButtonText: {
+    color: "#075985",
+    fontSize: 13,
+    fontWeight: "900",
+  },
+
+  locationStopButton: {
+    marginTop: 10,
+    backgroundColor: "#FEE2E2",
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    alignItems: "center",
+  },
+
+  locationStopButtonText: {
+    color: "#B91C1C",
+    fontSize: 13,
+    fontWeight: "900",
+  },
+  locationPanel: {
+  backgroundColor: "#F8FAFC",
+  borderRadius: 18,
+  padding: 16,
+  borderWidth: 1,
+  borderColor: "#E2E8F0",
+  marginTop: 18,
+},
 });
 
 export default styles;

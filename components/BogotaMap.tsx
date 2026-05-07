@@ -2,9 +2,21 @@ import { useEffect, useState, type ComponentType } from "react";
 import { Text, View } from "react-native";
 
 import styles from "../app/styles/styles";
+import type { UserLocation } from "../hooks/useUserLocation";
 
-export default function BogotaMap() {
-  const [MapComponent, setMapComponent] = useState<ComponentType | null>(null);
+type BogotaMapProps = {
+  location: UserLocation | null;
+  followUser: boolean;
+  centerRequestId: number;
+};
+
+export default function BogotaMap({
+  location,
+  followUser,
+  centerRequestId,
+}: BogotaMapProps) {
+  const [MapComponent, setMapComponent] =
+    useState<ComponentType<BogotaMapProps> | null>(null);
 
   useEffect(() => {
     let componenteActivo = true;
@@ -40,5 +52,11 @@ export default function BogotaMap() {
     );
   }
 
-  return <MapComponent />;
+  return (
+    <MapComponent
+      location={location}
+      followUser={followUser}
+      centerRequestId={centerRequestId}
+    />
+  );
 }
