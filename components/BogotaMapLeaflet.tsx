@@ -1,10 +1,11 @@
+import { Asset } from "expo-asset";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import L, {
   type LatLngExpression,
   type Layer,
   type PathOptions,
 } from "leaflet";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Circle,
   CircleMarker,
@@ -13,6 +14,7 @@ import {
   Popup,
   TileLayer,
   useMap,
+  useMapEvents,
 } from "react-leaflet";
 import { Text, View } from "react-native";
 
@@ -20,7 +22,9 @@ import styles from "../app/styles/styles";
 import { type UserLocation } from "../hooks/useUserLocation";
 
 const BOGOTA_CENTER: LatLngExpression = [4.711, -74.0721];
-const GEOJSON_URL = "/data/MANZ.geojson";
+
+const MANZ_GEOJSON = require("../assets/data/MANZ.geojson");
+const PARADEROS_DATA = require("../assets/data/paraderos.json");
 
 const estiloBaseManzana: PathOptions = {
   color: "#1D4ED8",
@@ -36,11 +40,93 @@ const estiloHoverManzana: PathOptions = {
   fillOpacity: 0.35,
 };
 
+const estiloParadero: PathOptions = {
+  color: "#FFFFFF",
+  fillColor: "#7C3AED",
+  fillOpacity: 0.95,
+  weight: 2,
+};
+
 type BogotaMapLeafletProps = {
   location: UserLocation | null;
   followUser: boolean;
   centerRequestId: number;
 };
+
+type EsriParaderoFeature = {
+  attributes?: {
+    FID?: number;
+    objectid?: number;
+    cenefa_par?: string;
+    mdoulo_par?: string;
+    zona_parad?: number;
+    nombre_par?: string;
+    via_parade?: string;
+    direccion_?: string;
+    localidad_?: number;
+    consola_pa?: string;
+    panel_para?: string;
+    audio_para?: string;
+    longitud_p?: number;
+    latitud_pa?: number;
+    globalid?: string;
+  };
+  geometry?: {
+    x?: number;
+    y?: number;
+  };
+};
+
+type EsriParaderosData = {
+  features?: EsriParaderoFeature[];
+};
+
+type Paradero = {
+  id: string;
+  nombre: string;
+  direccion: string;
+  codigo: string;
+  modulo: string;
+  zona: string;
+  latitud: number;
+  longitud: number;
+};
+
+function normalizarParaderos(data: EsriParaderosData): Paradero[] {
+  const features = data.features ?? [];
+
+  return features
+    .map((feature, index) => {
+      const attributes = feature.attributes ?? {};
+      const geometry = feature.geometry ?? {};
+
+      const longitud = geometry.x ?? attributes.longitud_p;
+      const latitud = geometry.y ?? attributes.latitud_pa;
+
+      if (typeof latitud !== "number" || typeof longitud !== "number") {
+        return null;
+      }
+
+      return {
+        id: String(attributes.globalid ?? attributes.objectid ?? index),
+        nombre: attributes.nombre_par ?? "Paradero sin nombre",
+        direccion:
+          attributes.direccion_ ??
+          attributes.panel_para ??
+          attributes.via_parade ??
+          "Dirección no disponible",
+        codigo: attributes.cenefa_par ?? "Sin código",
+        modulo: attributes.mdoulo_par ?? "Sin módulo",
+        zona:
+          typeof attributes.zona_parad === "number"
+            ? String(attributes.zona_parad)
+            : "Sin zona",
+        latitud,
+        longitud,
+      };
+    })
+    .filter((paradero): paradero is Paradero => paradero !== null);
+}
 
 function AjustarVistaGeoJson({
   data,
@@ -86,6 +172,59 @@ function CentrarEnUbicacion({
   }, [location, followUser, centerRequestId, map]);
 
   return null;
+}
+
+function ControlZoomActual({
+  onZoomChange,
+}: {
+  onZoomChange: (zoom: number) => void;
+}) {
+  const map = useMapEvents({
+    zoomend: () => {
+      onZoomChange(map.getZoom());
+    },
+  });
+
+  useEffect(() => {
+    onZoomChange(map.getZoom());
+  }, [map, onZoomChange]);
+
+  return null;
+}
+
+function CapaParaderos({
+  paraderos,
+  visible,
+}: {
+  paraderos: Paradero[];
+  visible: boolean;
+}) {
+  if (!visible) return null;
+
+  return (
+    <>
+      {paraderos.map((paradero) => (
+        <CircleMarker
+          key={paradero.id}
+          center={[paradero.latitud, paradero.longitud]}
+          radius={5}
+          pathOptions={estiloParadero}
+        >
+          <Popup>
+            <strong>{paradero.nombre}</strong>
+            <br />
+            <b>Código:</b> {paradero.codigo}
+            <br />
+            <b>Módulo:</b> {paradero.modulo}
+            <br />
+            <b>Zona:</b> {paradero.zona}
+            <br />
+            <b>Dirección:</b> {paradero.direccion}
+          </Popup>
+        </CircleMarker>
+      ))}
+    </>
+  );
 }
 
 function configurarInteraccion(
@@ -134,15 +273,30 @@ export default function BogotaMapLeaflet({
     "cargando" | "listo" | "error"
   >("cargando");
 
+  const [zoomActual, setZoomActual] = useState(11);
+
+  const paraderos = useMemo(
+    () => normalizarParaderos(PARADEROS_DATA as EsriParaderosData),
+    []
+  );
+
+  const mostrarParaderos = zoomActual >= 13;
+
   useEffect(() => {
     let componenteActivo = true;
 
     async function cargarGeoJson() {
       try {
-        const respuesta = await fetch(GEOJSON_URL);
+        const asset = Asset.fromModule(MANZ_GEOJSON);
+
+        await asset.downloadAsync();
+
+        const uri = asset.localUri ?? asset.uri;
+
+        const respuesta = await fetch(uri);
 
         if (!respuesta.ok) {
-          throw new Error("No se pudo cargar /data/MANZ.geojson");
+          throw new Error("No se pudo cargar assets/data/MANZ.geojson");
         }
 
         const data = (await respuesta.json()) as FeatureCollection<Geometry>;
@@ -187,6 +341,8 @@ export default function BogotaMapLeaflet({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        <ControlZoomActual onZoomChange={setZoomActual} />
+
         {geojson && (
           <>
             <GeoJSON
@@ -198,6 +354,8 @@ export default function BogotaMapLeaflet({
             <AjustarVistaGeoJson data={geojson} />
           </>
         )}
+
+        <CapaParaderos paraderos={paraderos} visible={mostrarParaderos} />
 
         {location && (
           <>
@@ -237,13 +395,22 @@ export default function BogotaMapLeaflet({
             </CircleMarker>
 
             <CentrarEnUbicacion
-  location={location}
-  followUser={followUser}
-  centerRequestId={centerRequestId}
-/>
+              location={location}
+              followUser={followUser}
+              centerRequestId={centerRequestId}
+            />
           </>
         )}
       </MapContainer>
+
+      <View style={styles.mapLayerInfo}>
+        <Text style={styles.mapLayerInfoTitle}>Paraderos</Text>
+        <Text style={styles.mapLayerInfoText}>
+          {mostrarParaderos
+            ? `${paraderos.length} paraderos visibles en el mapa`
+            : "Acerca el mapa para visualizar los paraderos"}
+        </Text>
+      </View>
 
       {estadoCarga === "cargando" && (
         <View style={styles.mapLoading}>
@@ -256,7 +423,7 @@ export default function BogotaMapLeaflet({
       {estadoCarga === "error" && (
         <View style={styles.mapLoading}>
           <Text style={styles.mapLoadingText}>
-            No se pudo cargar /data/MANZ.geojson
+            No se pudo cargar assets/data/MANZ.geojson
           </Text>
         </View>
       )}

@@ -446,6 +446,39 @@ const styles = StyleSheet.create({
   borderColor: "#E2E8F0",
   marginTop: 18,
 },
+  mapLayerInfo: {
+    position: "absolute",
+    left: 20,
+    bottom: 20,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    shadowColor: "#0F172A",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 1000,
+  },
+
+  mapLayerInfoTitle: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: "#0F172A",
+    marginBottom: 3,
+  },
+
+  mapLayerInfoText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#475569",
+  },
 });
 
 export default styles;

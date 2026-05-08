@@ -81,8 +81,8 @@ const handleStopLocation = () => {
             <Text style={styles.panelTitle}>Capa geográfica cargada</Text>
 
             <Text style={styles.panelText}>
-              Esta vista integra el archivo MANZ.geojson como capa oficial de
-              polígonos. Cada elemento representa una manzana de Bogotá.
+             Esta vista integra el archivo MANZ.geojson como capa de manzanas y el archivo
+  paraderos.json como capa de puntos del sistema de transporte.
             </Text>
 
             <View style={styles.metricGrid}>
@@ -189,6 +189,12 @@ const handleStopLocation = () => {
   followUser={followUser}
   centerRequestId={centerRequestId}
   />
+  <Text style={styles.infoText}>
+  • Visualizar paraderos al acercar el mapa.
+</Text>
+<Text style={styles.infoText}>
+  • Hacer clic sobre un paradero para consultar nombre, código, módulo y dirección.
+</Text>
         </View>
       </View>
     </View>
