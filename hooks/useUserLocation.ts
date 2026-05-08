@@ -30,7 +30,6 @@ function getLocationErrorMessage(error: GeolocationPositionError) {
 
 function useUserLocation() {
   const watchIdRef = useRef<number | null>(null);
-
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [status, setStatus] = useState<LocationStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,7 +41,6 @@ function useUserLocation() {
       accuracy: position.coords.accuracy,
       timestamp: position.timestamp,
     });
-
     setStatus("tracking");
     setErrorMessage("");
   }, []);
@@ -61,7 +59,6 @@ function useUserLocation() {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
     }
-
     setStatus((currentStatus) =>
       currentStatus === "tracking" ? "idle" : currentStatus
     );
@@ -77,15 +74,11 @@ function useUserLocation() {
     setStatus("requesting");
     setErrorMessage("");
 
-    navigator.geolocation.getCurrentPosition(
-      updateLocation,
-      handleLocationError,
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0,
-      }
-    );
+    navigator.geolocation.getCurrentPosition(updateLocation, handleLocationError, {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0,
+    });
 
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);

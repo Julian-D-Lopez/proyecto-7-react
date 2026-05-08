@@ -1,13 +1,14 @@
 {
-  "name": "proyecto7",
+  "name": "movilidad-facil-bogota",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
+    "web": "expo start --web",
+    "web:clear": "expo start --web --clear",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web",
     "lint": "expo lint"
   },
   "dependencies": {
@@ -16,7 +17,7 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.33",
-    "expo-asset": "~12.0.13",
+    "expo-asset": "~12.0.12",
     "expo-constants": "~18.0.13",
     "expo-font": "~14.0.11",
     "expo-haptics": "~15.0.8",
@@ -42,11 +43,10 @@
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.16",
-    "@types/leaflet": "^1.9.21",
+    "@types/leaflet": "^1.9.20",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "typescript": "~5.9.2"
-  },
-  "private": true
+  }
 }

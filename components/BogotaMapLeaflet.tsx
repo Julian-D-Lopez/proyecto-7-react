@@ -1,238 +1,59 @@
 import { Asset } from "expo-asset";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import L, {
+  type LatLngBounds,
   type LatLngExpression,
+  type LeafletMouseEvent,
   type Layer,
   type PathOptions,
 } from "leaflet";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Circle,
   CircleMarker,
   GeoJSON,
   MapContainer,
+  Polyline,
   Popup,
   TileLayer,
+  Tooltip,
   useMap,
   useMapEvents,
 } from "react-leaflet";
 import { Text, View } from "react-native";
 
 import styles from "../app/styles/styles";
-import { type UserLocation } from "../hooks/useUserLocation";
+import type { BogotaMapProps } from "./BogotaMap";
 
 const BOGOTA_CENTER: LatLngExpression = [4.711, -74.0721];
-
 const MANZ_GEOJSON = require("../assets/data/MANZ.geojson");
-const PARADEROS_DATA = require("../assets/data/paraderos.json");
 
 const estiloBaseManzana: PathOptions = {
   color: "#1D4ED8",
-  weight: 0.45,
+  weight: 0.35,
   fillColor: "#38BDF8",
-  fillOpacity: 0.12,
+  fillOpacity: 0.08,
 };
 
 const estiloHoverManzana: PathOptions = {
   color: "#DC2626",
-  weight: 1.6,
+  weight: 1.4,
   fillColor: "#F97316",
-  fillOpacity: 0.35,
+  fillOpacity: 0.28,
 };
 
 const estiloParadero: PathOptions = {
   color: "#FFFFFF",
   fillColor: "#7C3AED",
-  fillOpacity: 0.95,
+  fillOpacity: 1,
   weight: 2,
 };
 
-type BogotaMapLeafletProps = {
-  location: UserLocation | null;
-  followUser: boolean;
-  centerRequestId: number;
-};
-
-type EsriParaderoFeature = {
-  attributes?: {
-    FID?: number;
-    objectid?: number;
-    cenefa_par?: string;
-    mdoulo_par?: string;
-    zona_parad?: number;
-    nombre_par?: string;
-    via_parade?: string;
-    direccion_?: string;
-    localidad_?: number;
-    consola_pa?: string;
-    panel_para?: string;
-    audio_para?: string;
-    longitud_p?: number;
-    latitud_pa?: number;
-    globalid?: string;
-  };
-  geometry?: {
-    x?: number;
-    y?: number;
-  };
-};
-
-type EsriParaderosData = {
-  features?: EsriParaderoFeature[];
-};
-
-type Paradero = {
-  id: string;
-  nombre: string;
-  direccion: string;
-  codigo: string;
-  modulo: string;
-  zona: string;
-  latitud: number;
-  longitud: number;
-};
-
-function normalizarParaderos(data: EsriParaderosData): Paradero[] {
-  const features = data.features ?? [];
-
-  return features
-    .map((feature, index) => {
-      const attributes = feature.attributes ?? {};
-      const geometry = feature.geometry ?? {};
-
-      const longitud = geometry.x ?? attributes.longitud_p;
-      const latitud = geometry.y ?? attributes.latitud_pa;
-
-      if (typeof latitud !== "number" || typeof longitud !== "number") {
-        return null;
-      }
-
-      return {
-        id: String(attributes.globalid ?? attributes.objectid ?? index),
-        nombre: attributes.nombre_par ?? "Paradero sin nombre",
-        direccion:
-          attributes.direccion_ ??
-          attributes.panel_para ??
-          attributes.via_parade ??
-          "Dirección no disponible",
-        codigo: attributes.cenefa_par ?? "Sin código",
-        modulo: attributes.mdoulo_par ?? "Sin módulo",
-        zona:
-          typeof attributes.zona_parad === "number"
-            ? String(attributes.zona_parad)
-            : "Sin zona",
-        latitud,
-        longitud,
-      };
-    })
-    .filter((paradero): paradero is Paradero => paradero !== null);
-}
-
-function AjustarVistaGeoJson({
-  data,
-}: {
-  data: FeatureCollection<Geometry> | null;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!data) return;
-
-    const capaTemporal = L.geoJSON(data);
-    const bounds = capaTemporal.getBounds();
-
-    if (bounds.isValid()) {
-      map.fitBounds(bounds, {
-        padding: [24, 24],
-      });
-    }
-  }, [data, map]);
-
-  return null;
-}
-
-function CentrarEnUbicacion({
-  location,
-  followUser,
-  centerRequestId,
-}: {
-  location: UserLocation | null;
-  followUser: boolean;
-  centerRequestId: number;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!location || !followUser) return;
-
-    map.flyTo([location.latitude, location.longitude], 17, {
-      animate: true,
-      duration: 1,
-    });
-  }, [location, followUser, centerRequestId, map]);
-
-  return null;
-}
-
-function ControlZoomActual({
-  onZoomChange,
-}: {
-  onZoomChange: (zoom: number) => void;
-}) {
-  const map = useMapEvents({
-    zoomend: () => {
-      onZoomChange(map.getZoom());
-    },
-  });
-
-  useEffect(() => {
-    onZoomChange(map.getZoom());
-  }, [map, onZoomChange]);
-
-  return null;
-}
-
-function CapaParaderos({
-  paraderos,
-  visible,
-}: {
-  paraderos: Paradero[];
-  visible: boolean;
-}) {
-  if (!visible) return null;
-
-  return (
-    <>
-      {paraderos.map((paradero) => (
-        <CircleMarker
-          key={paradero.id}
-          center={[paradero.latitud, paradero.longitud]}
-          radius={5}
-          pathOptions={estiloParadero}
-        >
-          <Popup>
-            <strong>{paradero.nombre}</strong>
-            <br />
-            <b>Código:</b> {paradero.codigo}
-            <br />
-            <b>Módulo:</b> {paradero.modulo}
-            <br />
-            <b>Zona:</b> {paradero.zona}
-            <br />
-            <b>Dirección:</b> {paradero.direccion}
-          </Popup>
-        </CircleMarker>
-      ))}
-    </>
-  );
-}
-
-function configurarInteraccion(
+function configurarInteraccionManzana(
   feature: Feature<Geometry> | undefined,
   layer: Layer
 ) {
   const properties = feature?.properties ?? {};
-
   const mancodigo = properties.MANCODIGO ?? "Sin código";
   const seccodigo = properties.SECCODIGO ?? "Sin sector";
   const area = properties.SHAPE_AREA
@@ -246,80 +67,132 @@ function configurarInteraccion(
     <b>Área:</b> ${area}
   `);
 
-  const capaInteractiva = layer as Layer & {
+  const interactiveLayer = layer as Layer & {
     setStyle?: (style: PathOptions) => void;
   };
 
   layer.on({
-    mouseover: () => {
-      capaInteractiva.setStyle?.(estiloHoverManzana);
-    },
-    mouseout: () => {
-      capaInteractiva.setStyle?.(estiloBaseManzana);
-    },
+    mouseover: () => interactiveLayer.setStyle?.(estiloHoverManzana),
+    mouseout: () => interactiveLayer.setStyle?.(estiloBaseManzana),
   });
+}
+
+function FitGeoJsonBounds({ data }: { data: FeatureCollection<Geometry> | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!data) return;
+    const layer = L.geoJSON(data);
+    const bounds = layer.getBounds();
+    if (bounds.isValid()) map.fitBounds(bounds, { padding: [24, 24] });
+  }, [data, map]);
+
+  return null;
+}
+
+function CenterOnLocation({
+  location,
+  followUser,
+  centerRequestId,
+}: Pick<BogotaMapProps, "location" | "followUser" | "centerRequestId">) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!location || !followUser) return;
+    map.flyTo([location.latitude, location.longitude], 17, {
+      animate: true,
+      duration: 1,
+    });
+  }, [location, followUser, centerRequestId, map]);
+
+  return null;
+}
+
+function MapStateTracker({
+  onChange,
+  onMapClick,
+}: {
+  onChange: (zoom: number, bounds: LatLngBounds) => void;
+  onMapClick: (event: LeafletMouseEvent) => void;
+}) {
+  const map = useMapEvents({
+    zoomend: () => onChange(map.getZoom(), map.getBounds()),
+    moveend: () => onChange(map.getZoom(), map.getBounds()),
+    click: onMapClick,
+  });
+
+  useEffect(() => {
+    onChange(map.getZoom(), map.getBounds());
+  }, [map, onChange]);
+
+  return null;
 }
 
 export default function BogotaMapLeaflet({
   location,
   followUser,
   centerRequestId,
-}: BogotaMapLeafletProps) {
-  const [geojson, setGeojson] = useState<FeatureCollection<Geometry> | null>(
-    null
-  );
-
-  const [estadoCarga, setEstadoCarga] = useState<
-    "cargando" | "listo" | "error"
-  >("cargando");
-
+  selectedRoute,
+  originPoint,
+  destinationPoint,
+  selectionMode,
+  paraderos,
+  onMapPointSelected,
+}: BogotaMapProps) {
+  const [geojson, setGeojson] = useState<FeatureCollection<Geometry> | null>(null);
+  const [estadoManzanas, setEstadoManzanas] = useState<"cargando" | "listo" | "error">("cargando");
   const [zoomActual, setZoomActual] = useState(11);
+  const [boundsActuales, setBoundsActuales] = useState<LatLngBounds | null>(null);
 
-  const paraderos = useMemo(
-    () => normalizarParaderos(PARADEROS_DATA as EsriParaderosData),
-    []
-  );
+  const handleMapStateChange = useCallback((zoom: number, bounds: LatLngBounds) => {
+    setZoomActual(zoom);
+    setBoundsActuales(bounds);
+  }, []);
 
-  const mostrarParaderos = zoomActual >= 13;
+  const handleMapClick = useCallback((event: LeafletMouseEvent) => {
+    if (!selectionMode) return;
+    onMapPointSelected({
+      latitude: event.latlng.lat,
+      longitude: event.latlng.lng,
+    });
+  }, [onMapPointSelected, selectionMode]);
 
   useEffect(() => {
-    let componenteActivo = true;
+    let active = true;
 
-    async function cargarGeoJson() {
+    async function cargarManzanas() {
       try {
         const asset = Asset.fromModule(MANZ_GEOJSON);
-
         await asset.downloadAsync();
-
         const uri = asset.localUri ?? asset.uri;
-
-        const respuesta = await fetch(uri);
-
-        if (!respuesta.ok) {
-          throw new Error("No se pudo cargar assets/data/MANZ.geojson");
-        }
-
-        const data = (await respuesta.json()) as FeatureCollection<Geometry>;
-
-        if (componenteActivo) {
+        const response = await fetch(uri);
+        if (!response.ok) throw new Error("No se pudo cargar assets/data/MANZ.geojson");
+        const data = (await response.json()) as FeatureCollection<Geometry>;
+        if (active) {
           setGeojson(data);
-          setEstadoCarga("listo");
+          setEstadoManzanas("listo");
         }
       } catch (error) {
-        console.error(error);
-
-        if (componenteActivo) {
-          setEstadoCarga("error");
-        }
+        console.warn("No fue posible cargar MANZ.geojson. El mapa continúa sin esa capa.", error);
+        if (active) setEstadoManzanas("error");
       }
     }
 
-    cargarGeoJson();
-
+    cargarManzanas();
     return () => {
-      componenteActivo = false;
+      active = false;
     };
   }, []);
+
+  const paraderosVisibles = useMemo(() => {
+    if (!boundsActuales || zoomActual < 12) return [];
+
+    return paraderos
+      .filter((paradero) => boundsActuales.contains([paradero.latitud, paradero.longitud]))
+      .slice(0, 900);
+  }, [boundsActuales, paraderos, zoomActual]);
+
+  const showParaderos = zoomActual >= 12;
 
   return (
     <View style={styles.leafletWrapper}>
@@ -330,55 +203,101 @@ export default function BogotaMapLeaflet({
         maxZoom={18}
         scrollWheelZoom
         preferCanvas
-        style={{
-          height: "100%",
-          width: "100%",
-          borderRadius: 22,
-        }}
+        style={{ height: "100%", width: "100%", borderRadius: 22 }}
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <ControlZoomActual onZoomChange={setZoomActual} />
+        <MapStateTracker
+          onChange={handleMapStateChange}
+          onMapClick={handleMapClick}
+        />
 
         {geojson && (
           <>
             <GeoJSON
               data={geojson}
               style={() => estiloBaseManzana}
-              onEachFeature={configurarInteraccion}
+              onEachFeature={configurarInteraccionManzana}
             />
-
-            <AjustarVistaGeoJson data={geojson} />
+            <FitGeoJsonBounds data={geojson} />
           </>
         )}
 
-        <CapaParaderos paraderos={paraderos} visible={mostrarParaderos} />
+        {selectedRoute && (
+          <Polyline
+            positions={selectedRoute.coordinates}
+            pathOptions={{ color: selectedRoute.color, weight: 6, opacity: 0.9 }}
+          >
+            <Tooltip sticky>
+              {selectedRoute.numero} - {selectedRoute.nombre}
+            </Tooltip>
+          </Polyline>
+        )}
+
+        {showParaderos &&
+          paraderosVisibles.map((paradero) => (
+            <CircleMarker
+              key={paradero.id}
+              center={[paradero.latitud, paradero.longitud]}
+              radius={7}
+              pathOptions={estiloParadero}
+            >
+              <Popup>
+                <strong>{paradero.nombre}</strong>
+                <br />
+                <b>Código:</b> {paradero.codigo}
+                <br />
+                <b>Módulo:</b> {paradero.modulo}
+                <br />
+                <b>Zona:</b> {paradero.zona}
+                <br />
+                <b>Dirección:</b> {paradero.direccion}
+              </Popup>
+            </CircleMarker>
+          ))}
+
+        {originPoint && (
+          <CircleMarker
+            center={[originPoint.latitude, originPoint.longitude]}
+            radius={9}
+            pathOptions={{ color: "#FFFFFF", fillColor: "#16A34A", fillOpacity: 1, weight: 3 }}
+          >
+            <Popup>
+              <strong>Origen seleccionado</strong>
+              <br />
+              {originPoint.latitude.toFixed(6)}, {originPoint.longitude.toFixed(6)}
+            </Popup>
+          </CircleMarker>
+        )}
+
+        {destinationPoint && (
+          <CircleMarker
+            center={[destinationPoint.latitude, destinationPoint.longitude]}
+            radius={9}
+            pathOptions={{ color: "#FFFFFF", fillColor: "#DC2626", fillOpacity: 1, weight: 3 }}
+          >
+            <Popup>
+              <strong>Destino seleccionado</strong>
+              <br />
+              {destinationPoint.latitude.toFixed(6)}, {destinationPoint.longitude.toFixed(6)}
+            </Popup>
+          </CircleMarker>
+        )}
 
         {location && (
           <>
             <Circle
               center={[location.latitude, location.longitude]}
               radius={location.accuracy ?? 30}
-              pathOptions={{
-                color: "#2563EB",
-                fillColor: "#3B82F6",
-                fillOpacity: 0.12,
-                weight: 2,
-              }}
+              pathOptions={{ color: "#2563EB", fillColor: "#3B82F6", fillOpacity: 0.12, weight: 2 }}
             />
-
             <CircleMarker
               center={[location.latitude, location.longitude]}
               radius={10}
-              pathOptions={{
-                color: "#FFFFFF",
-                fillColor: "#2563EB",
-                fillOpacity: 1,
-                weight: 3,
-              }}
+              pathOptions={{ color: "#FFFFFF", fillColor: "#2563EB", fillOpacity: 1, weight: 3 }}
             >
               <Popup>
                 <strong>Tu ubicación actual</strong>
@@ -387,14 +306,10 @@ export default function BogotaMapLeaflet({
                 <br />
                 Longitud: {location.longitude.toFixed(6)}
                 <br />
-                Precisión:{" "}
-                {location.accuracy
-                  ? `${Math.round(location.accuracy)} metros`
-                  : "No disponible"}
+                Precisión: {location.accuracy ? `${Math.round(location.accuracy)} metros` : "No disponible"}
               </Popup>
             </CircleMarker>
-
-            <CentrarEnUbicacion
+            <CenterOnLocation
               location={location}
               followUser={followUser}
               centerRequestId={centerRequestId}
@@ -404,27 +319,21 @@ export default function BogotaMapLeaflet({
       </MapContainer>
 
       <View style={styles.mapLayerInfo}>
-        <Text style={styles.mapLayerInfoTitle}>Paraderos</Text>
+        <Text style={styles.mapLayerInfoTitle}>Capas del mapa</Text>
+        <Text style={styles.mapLayerInfoText}>Manzanas: {estadoManzanas}</Text>
         <Text style={styles.mapLayerInfoText}>
-          {mostrarParaderos
-            ? `${paraderos.length} paraderos visibles en el mapa`
-            : "Acerca el mapa para visualizar los paraderos"}
+          Paraderos: {showParaderos ? `${paraderosVisibles.length} visibles de ${paraderos.length}` : `acerca el mapa · ${paraderos.length} cargados`}
         </Text>
+        {selectionMode && (
+          <Text style={styles.mapLayerInfoHint}>
+            Haz clic en el mapa para fijar {selectionMode === "origin" ? "el origen" : "el destino"}.
+          </Text>
+        )}
       </View>
 
-      {estadoCarga === "cargando" && (
+      {estadoManzanas === "cargando" && (
         <View style={styles.mapLoading}>
-          <Text style={styles.mapLoadingText}>
-            Cargando mapa exacto de Bogotá...
-          </Text>
-        </View>
-      )}
-
-      {estadoCarga === "error" && (
-        <View style={styles.mapLoading}>
-          <Text style={styles.mapLoadingText}>
-            No se pudo cargar assets/data/MANZ.geojson
-          </Text>
+          <Text style={styles.mapLoadingText}>Cargando manzanas de Bogotá...</Text>
         </View>
       )}
     </View>

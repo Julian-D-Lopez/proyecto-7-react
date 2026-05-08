@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  container: {
+  homePage: {
     flex: 1,
     minHeight: "100%",
     backgroundColor: "#E0F2FE",
@@ -10,19 +10,16 @@ const styles = StyleSheet.create({
     padding: 32,
   },
 
-  card: {
+  homeCard: {
     width: "100%",
-    maxWidth: 760,
+    maxWidth: 820,
     backgroundColor: "#FFFFFF",
     borderRadius: 28,
-    padding: 40,
+    padding: 42,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     shadowColor: "#0F172A",
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
+    shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.18,
     shadowRadius: 24,
     elevation: 10,
@@ -33,22 +30,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#DBEAFE",
     color: "#1D4ED8",
     fontSize: 14,
-    fontWeight: "800",
+    fontWeight: "900",
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 999,
     marginBottom: 18,
   },
 
-  title: {
-    fontSize: 44,
+  homeTitle: {
+    fontSize: 46,
     fontWeight: "900",
     color: "#0F172A",
     marginBottom: 16,
-    textAlign: "left",
   },
 
-  subtitle: {
+  homeSubtitle: {
     fontSize: 18,
     lineHeight: 28,
     color: "#475569",
@@ -91,42 +87,11 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 
-  secondaryButton: {
-    backgroundColor: "#E2E8F0",
-    paddingVertical: 16,
-    paddingHorizontal: 28,
-    borderRadius: 18,
-    alignItems: "center",
-    marginTop: 24,
-  },
-
-  secondaryButtonText: {
-    color: "#0F172A",
-    fontSize: 18,
-    fontWeight: "900",
-  },
-
-  placeholderMap: {
-    height: 320,
-    borderRadius: 22,
-    backgroundColor: "#DCFCE7",
-    borderWidth: 2,
-    borderColor: "#22C55E",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 8,
-  },
-
-  placeholderText: {
-    color: "#166534",
-    fontSize: 20,
-    fontWeight: "900",
-  },
-
   mapPage: {
     flex: 1,
     backgroundColor: "#F8FAFC",
-    padding: 24,
+    padding: 18,
+    minHeight: "100%",
   },
 
   mapHeader: {
@@ -136,11 +101,15 @@ const styles = StyleSheet.create({
     padding: 24,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    marginBottom: 20,
+    marginBottom: 18,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     gap: 20,
+  },
+
+  mapHeaderText: {
+    flex: 1,
   },
 
   mapTitle: {
@@ -151,216 +120,213 @@ const styles = StyleSheet.create({
   },
 
   mapSubtitle: {
-    fontSize: 17,
-    lineHeight: 25,
+    fontSize: 16,
+    lineHeight: 24,
     color: "#475569",
-    maxWidth: 850,
+    maxWidth: 950,
+  },
+
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  headerLocationButton: {
+    backgroundColor: "#2563EB",
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 16,
+    alignItems: "center",
+  },
+
+  headerLocationButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "900",
   },
 
   smallButton: {
     backgroundColor: "#0F172A",
     paddingVertical: 14,
-    paddingHorizontal: 22,
+    paddingHorizontal: 20,
     borderRadius: 16,
     alignItems: "center",
   },
 
   smallButtonText: {
     color: "#FFFFFF",
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "900",
   },
 
   mapContent: {
     flex: 1,
     flexDirection: "row",
-    gap: 20,
+    gap: 16,
+    minHeight: 660,
   },
 
   mapPanel: {
-    width: 360,
+    width: 410,
     backgroundColor: "#FFFFFF",
     borderRadius: 24,
-    padding: 22,
+    padding: 16,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
 
+  sectionBox: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 14,
+  },
+
   panelTitle: {
-    fontSize: 24,
+    fontSize: 21,
     fontWeight: "900",
     color: "#0F172A",
     marginBottom: 10,
   },
 
   panelText: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#475569",
-    marginBottom: 20,
-  },
-
-  legendContainer: {
-    gap: 14,
-  },
-
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
-  },
-
-  legendColor: {
-    width: 18,
-    height: 18,
-    borderRadius: 999,
-    marginTop: 3,
-  },
-
-  legendTextBox: {
-    flex: 1,
-  },
-
-  legendTitle: {
-    fontSize: 15,
-    fontWeight: "900",
-    color: "#0F172A",
-    marginBottom: 3,
-  },
-
-  legendDescription: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: "#64748B",
-  },
-
-  infoBox: {
-    backgroundColor: "#EFF6FF",
-    borderRadius: 18,
-    padding: 16,
-    marginTop: 22,
-    borderWidth: 1,
-    borderColor: "#BFDBFE",
-  },
-
-  infoTitle: {
-    fontSize: 16,
-    fontWeight: "900",
-    color: "#1E3A8A",
-    marginBottom: 8,
-  },
-
-  infoText: {
     fontSize: 14,
     lineHeight: 21,
-    color: "#1E40AF",
+    color: "#475569",
+    marginBottom: 12,
   },
 
-  mapCardLarge: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    overflow: "hidden",
-  },
-
-  leafletWrapper: {
-    flex: 1,
-    minHeight: 640,
-    borderRadius: 22,
-    overflow: "hidden",
-  },
-
-  mapLoading: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+  input: {
+    backgroundColor: "#F8FAFC",
     borderWidth: 1,
     borderColor: "#CBD5E1",
-    shadowColor: "#0F172A",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    elevation: 8,
-    zIndex: 1000,
-  },
-
-  mapLoadingText: {
-    color: "#0F172A",
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     fontSize: 14,
-    fontWeight: "800",
+    color: "#0F172A",
+    marginBottom: 10,
   },
 
-  metricGrid: {
-    gap: 12,
-    marginTop: 10,
+  resultList: {
+    gap: 8,
   },
 
-  metricCard: {
+  resultItem: {
+    flexDirection: "row",
+    gap: 10,
+    padding: 10,
+    borderRadius: 14,
     backgroundColor: "#F8FAFC",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    borderRadius: 18,
-    padding: 16,
   },
 
-  metricNumber: {
-    fontSize: 22,
+  routeDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 999,
+    marginTop: 4,
+  },
+
+  resultTextBox: {
+    flex: 1,
+  },
+
+  resultTitle: {
+    fontSize: 14,
     fontWeight: "900",
     color: "#0F172A",
-    marginBottom: 4,
   },
 
-  metricLabel: {
-    fontSize: 13,
-    fontWeight: "700",
+  resultDescription: {
+    fontSize: 12,
+    lineHeight: 17,
     color: "#64748B",
-  },
-    locationControl: {
-    position: "absolute",
-    right: 20,
-    top: 20,
-    width: 300,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#CBD5E1",
-    shadowColor: "#0F172A",
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 10,
-    zIndex: 1000,
+    marginTop: 2,
   },
 
-  locationTitle: {
-    fontSize: 17,
+  selectedRouteBox: {
+    backgroundColor: "#EFF6FF",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+    borderRadius: 14,
+    padding: 12,
+    marginTop: 10,
+  },
+
+  selectedRouteTitle: {
+    fontSize: 13,
+    color: "#1D4ED8",
     fontWeight: "900",
-    color: "#0F172A",
     marginBottom: 4,
+  },
+
+  selectedRouteText: {
+    fontSize: 14,
+    color: "#0F172A",
+    fontWeight: "800",
+  },
+
+  fieldLabel: {
+    fontSize: 13,
+    fontWeight: "900",
+    color: "#334155",
+    marginBottom: 6,
+    marginTop: 8,
+  },
+
+  pointText: {
+    fontSize: 12,
+    color: "#64748B",
+    fontWeight: "700",
+    marginBottom: 8,
+  },
+
+  inlineButtonRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 8,
+  },
+
+  miniButton: {
+    flex: 1,
+    backgroundColor: "#2563EB",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    alignItems: "center",
+  },
+
+  miniButtonText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+
+  miniButtonLight: {
+    flex: 1,
+    backgroundColor: "#E0F2FE",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    alignItems: "center",
+  },
+
+  miniButtonLightText: {
+    color: "#075985",
+    fontSize: 12,
+    fontWeight: "900",
   },
 
   locationStatus: {
     fontSize: 14,
-    fontWeight: "800",
+    fontWeight: "900",
     color: "#2563EB",
-    marginBottom: 12,
+    marginBottom: 10,
   },
 
   locationDataBox: {
@@ -376,7 +342,7 @@ const styles = StyleSheet.create({
   locationData: {
     fontSize: 13,
     color: "#334155",
-    fontWeight: "700",
+    fontWeight: "800",
   },
 
   locationError: {
@@ -438,14 +404,150 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "900",
   },
-  locationPanel: {
-  backgroundColor: "#F8FAFC",
-  borderRadius: 18,
-  padding: 16,
-  borderWidth: 1,
-  borderColor: "#E2E8F0",
-  marginTop: 18,
-},
+
+  subsectionTitle: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: "#0F172A",
+    marginTop: 10,
+    marginBottom: 8,
+  },
+
+  emptyText: {
+    fontSize: 13,
+    color: "#64748B",
+    lineHeight: 19,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 12,
+    padding: 10,
+  },
+
+  stopCard: {
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 14,
+    padding: 10,
+    marginBottom: 8,
+  },
+
+  stopTitle: {
+    fontSize: 14,
+    color: "#0F172A",
+    fontWeight: "900",
+  },
+
+  stopText: {
+    fontSize: 12,
+    color: "#64748B",
+    fontWeight: "700",
+    lineHeight: 17,
+    marginTop: 2,
+  },
+
+  stopDistance: {
+    fontSize: 12,
+    color: "#16A34A",
+    fontWeight: "900",
+    marginTop: 4,
+  },
+
+  alternativeCard: {
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    borderRadius: 16,
+    padding: 13,
+    marginBottom: 10,
+  },
+
+  alternativeHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    marginBottom: 4,
+  },
+
+  alternativeTitle: {
+    fontSize: 16,
+    fontWeight: "900",
+    color: "#0F172A",
+  },
+
+  transferBadge: {
+    backgroundColor: "#DBEAFE",
+    color: "#1D4ED8",
+    fontSize: 11,
+    fontWeight: "900",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+  },
+
+  alternativeType: {
+    fontSize: 13,
+    color: "#2563EB",
+    fontWeight: "900",
+    marginBottom: 6,
+  },
+
+  alternativeText: {
+    fontSize: 13,
+    lineHeight: 19,
+    color: "#475569",
+    marginBottom: 6,
+  },
+
+  alternativeLabel: {
+    fontSize: 12,
+    color: "#0F172A",
+    fontWeight: "900",
+    marginTop: 4,
+  },
+
+  mapCardLarge: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 24,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    overflow: "hidden",
+    minHeight: 660,
+  },
+
+  leafletWrapper: {
+    flex: 1,
+    minHeight: 640,
+    borderRadius: 22,
+    overflow: "hidden",
+  },
+
+  mapLoading: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 1000,
+  },
+
+  mapLoadingText: {
+    color: "#0F172A",
+    fontSize: 14,
+    fontWeight: "900",
+  },
+
   mapLayerInfo: {
     position: "absolute",
     left: 20,
@@ -457,10 +559,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#CBD5E1",
     shadowColor: "#0F172A",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.18,
     shadowRadius: 12,
     elevation: 8,
@@ -476,8 +575,15 @@ const styles = StyleSheet.create({
 
   mapLayerInfoText: {
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "800",
     color: "#475569",
+  },
+
+  mapLayerInfoHint: {
+    fontSize: 12,
+    fontWeight: "900",
+    color: "#DC2626",
+    marginTop: 6,
   },
 });
 
